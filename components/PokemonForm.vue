@@ -2,6 +2,8 @@
 import { object, string, type InferType } from "yup";
 import type { FormSubmitEvent } from "#ui/types";
 
+const toast = useToast()
+
 const schema = object({
   name: string()
     .min(3, "Precisa ter pelo menos 3 caracteres")
@@ -20,9 +22,27 @@ const state = reactive({
   image: undefined,
 });
 
+const goToHome = async () => {
+  await navigateTo({ path: '/' })
+}
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // Do something with event.data
-  console.log(event.data);
+  const pokemon = await $fetch('http://localhost:4000/pokemons', {
+    method: 'POST',
+    body: {
+      ...event.data
+    }
+  })
+
+  toast.add({
+    id: 'pokemon_created',
+    title: 'Pokemon Criado',
+    timeout: 0,
+    actions: [{
+      label: 'Ver Item',
+      click: () => { goToHome() }
+    }]
+  })
 }
 </script>
 
